@@ -1,103 +1,120 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Dna } from "lucide-react"
+import AnimalResultCard from "@/components/animal-result-card"
+
+interface AnimalResult {
+  id: number
+  name: string
+  matchScore: number
+  imageUrl: string
+}
+
+export default function DNAMatcher() {
+  const [dnaSequence, setDnaSequence] = useState("")
+  const [results, setResults] = useState<AnimalResult[] | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+
+  const handleSearch = () => {
+    if (!dnaSequence.trim()) return
+
+    setIsSearching(true)
+
+    // Simulate API call with timeout
+    setTimeout(() => {
+      // Mock results - in a real app, this would come from your API
+      const mockResults: AnimalResult[] = [
+        { id: 1, name: "Harimau Sumatera", matchScore: 98.7, imageUrl: "/placeholder.svg?height=200&width=200" },
+        { id: 2, name: "Orangutan", matchScore: 92.3, imageUrl: "/placeholder.svg?height=200&width=200" },
+        { id: 3, name: "Komodo", matchScore: 87.5, imageUrl: "/placeholder.svg?height=200&width=200" },
+        { id: 4, name: "Badak Jawa", matchScore: 82.1, imageUrl: "/placeholder.svg?height=200&width=200" },
+        { id: 5, name: "Gajah Sumatera", matchScore: 79.8, imageUrl: "/placeholder.svg?height=200&width=200" },
+        { id: 6, name: "Burung Cendrawasih", matchScore: 75.4, imageUrl: "/placeholder.svg?height=200&width=200" },
+      ]
+
+      setResults(mockResults)
+      setIsSearching(false)
+    }, 1500)
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-10">
+        {/* Title Section */}
+        <div className="text-center space-y-2">
+          <div className="flex items-center justify-center gap-2">
+            <Dna className="h-8 w-8 text-emerald-600" />
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-800">DNA Animal Matcher</h1>
+          </div>
+          <p className="text-slate-600">Animal identification based on DNA sequences</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+
+        {/* DNA Input Form */}
+        <Card className="shadow-lg border-slate-200">
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <label htmlFor="dna-input" className="block text-lg font-medium text-slate-700">
+                Enter DNA Sequence:
+              </label>
+              <textarea
+                id="dna-input"
+                className="w-full h-40 p-4 border border-slate-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                placeholder="Contoh: ATGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCT..."
+                value={dnaSequence}
+                onChange={(e) => setDnaSequence(e.target.value)}
+              />
+              <div className="flex justify-end">
+                <Button
+                  onClick={handleSearch}
+                  disabled={isSearching || !dnaSequence.trim()}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {isSearching ? "Searching..." : "Search Animal"}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Results Area */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Search Results</h2>
+
+          {!results && !isSearching && (
+            <div className="text-center py-12 bg-white rounded-lg border border-dashed border-slate-300">
+              <div className="flex justify-center mb-4">
+                <Dna className="h-12 w-12 text-slate-400" />
+              </div>
+              <p className="text-slate-500">Enter the DNA sequence and click the "Search Animal" button to see the results.</p>
+            </div>
+          )}
+
+          {isSearching && (
+            <div className="text-center py-12">
+              <div className="animate-pulse flex flex-col items-center">
+                <Dna className="h-12 w-12 text-emerald-500 animate-spin" />
+                <p className="mt-4 text-slate-600">Menganalisis sekuens DNA...</p>
+              </div>
+            </div>
+          )}
+
+          {results && !isSearching && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {results.map((animal) => (
+                <AnimalResultCard
+                  key={animal.id}
+                  name={animal.name}
+                  matchScore={animal.matchScore}
+                  imageUrl={animal.imageUrl}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  )
 }
