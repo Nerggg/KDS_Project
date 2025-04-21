@@ -61,8 +61,9 @@ export default function DNAMatcher() {
               </label>
               <textarea
                 id="dna-input"
-                className="w-full h-40 p-4 border border-slate-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Contoh: ATGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCT..."
+                // Tambahkan text-slate-900 dan placeholder:text-slate-400 di sini
+                className="w-full h-40 p-4 border border-slate-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-400"
+                placeholder="Example: ATGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCT..."
                 value={dnaSequence}
                 onChange={(e) => setDnaSequence(e.target.value)}
               />
