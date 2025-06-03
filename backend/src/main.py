@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from typing import List
 import bio_core.fasta as fasta
@@ -8,7 +9,14 @@ import uvicorn
 
 app = FastAPI()
 
-# Load FASTA dataset
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
+
 dataset_file_path = Path("IF3211_Dataset.fasta")
 try:
     fasta_sequences = fasta.parse_fasta_file(dataset_file_path)

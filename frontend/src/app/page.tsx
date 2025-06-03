@@ -7,37 +7,61 @@ import { Dna } from "lucide-react"
 import AnimalResultCard from "@/components/animal-result-card"
 
 interface AnimalResult {
-  id: number
-  name: string
-  matchScore: number
-  imageUrl: string
+  header_info: {
+    primary_id: string
+    kingdom: string
+    phylum: string
+    class_: string
+    order: string
+    family: string
+    genus: string
+    species: string
+    other_info: string
+  }
+  sequence: string
+  similarity_score: number
 }
 
 export default function DNAMatcher() {
   const [dnaSequence, setDnaSequence] = useState("")
   const [results, setResults] = useState<AnimalResult[] | null>(null)
   const [isSearching, setIsSearching] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!dnaSequence.trim()) return
 
     setIsSearching(true)
+    setError(null)
 
-    // Simulate API call with timeout
-    setTimeout(() => {
-      // Mock results - in a real app, this would come from your API
-      const mockResults: AnimalResult[] = [
-        { id: 1, name: "Harimau Sumatera", matchScore: 98.7, imageUrl: "/placeholder.svg?height=200&width=200" },
-        { id: 2, name: "Orangutan", matchScore: 92.3, imageUrl: "/placeholder.svg?height=200&width=200" },
-        { id: 3, name: "Komodo", matchScore: 87.5, imageUrl: "/placeholder.svg?height=200&width=200" },
-        { id: 4, name: "Badak Jawa", matchScore: 82.1, imageUrl: "/placeholder.svg?height=200&width=200" },
-        { id: 5, name: "Gajah Sumatera", matchScore: 79.8, imageUrl: "/placeholder.svg?height=200&width=200" },
-        { id: 6, name: "Burung Cendrawasih", matchScore: 75.4, imageUrl: "/placeholder.svg?height=200&width=200" },
-      ]
+    try {
+      const response = await fetch("http://127.0.0.1:8080/kmer_search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query_sequence: dnaSequence,
+          k: 10,
+        }),
+      })
 
-      setResults(mockResults)
+      if (!response.ok) {
+        throw new Error("Failed to fetch results")
+      }
+
+      const data = await response.json()
+      setResults(data.results)
+    } catch (err) {
+      console.error('Error fetching results:', err);
+      if (err instanceof Error) {
+        setError(`Error fetching results: ${err.message}`);
+      } else {
+        setError("Error fetching results. Please try again.");
+      }
+    } finally {
       setIsSearching(false)
-    }, 1500)
+    }
   }
 
   return (
@@ -61,7 +85,6 @@ export default function DNAMatcher() {
               </label>
               <textarea
                 id="dna-input"
-                // Tambahkan text-slate-900 dan placeholder:text-slate-400 di sini
                 className="w-full h-40 p-4 border border-slate-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-400"
                 placeholder="Example: ATGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCT..."
                 value={dnaSequence}
@@ -84,7 +107,13 @@ export default function DNAMatcher() {
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Search Results</h2>
 
-          {!results && !isSearching && (
+          {error && (
+            <div className="text-center py-12 bg-white rounded-lg border border-dashed border-red-300">
+              <p className="text-red-500">{error}</p>
+            </div>
+          )}
+
+          {!results && !isSearching && !error && (
             <div className="text-center py-12 bg-white rounded-lg border border-dashed border-slate-300">
               <div className="flex justify-center mb-4">
                 <Dna className="h-12 w-12 text-slate-400" />
@@ -102,14 +131,14 @@ export default function DNAMatcher() {
             </div>
           )}
 
-          {results && !isSearching && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {results.map((animal) => (
+          {results && !isSearching && !error && (
+            <div className="space-y-4">
+              {results.map((animal, index) => (
                 <AnimalResultCard
-                  key={animal.id}
-                  name={animal.name}
-                  matchScore={animal.matchScore}
-                  imageUrl={animal.imageUrl}
+                  key={index}
+                  header_info={animal.header_info}
+                  sequence={animal.sequence}
+                  similarity_score={animal.similarity_score}
                 />
               ))}
             </div>

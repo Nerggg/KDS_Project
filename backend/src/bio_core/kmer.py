@@ -37,7 +37,6 @@ def find_top_n_matches(query_sequence: str, dataset: List[FastaSequence], k: int
     similarity_results = []
 
     for seq in dataset:
-        print(f"kocokmeong currently on {seq}")
         dataset_kmer_counts = calculate_kmer_counts(seq.sequence, k)
         score = calculate_jaccard_similarity(query_kmer_counts, dataset_kmer_counts)
         similarity_results.append(SimilarityResult(
