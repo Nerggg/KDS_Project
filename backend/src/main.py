@@ -40,8 +40,8 @@ async def kmer_search(request_data: KmerSearchRequest):
     if not query_sequence:
         raise HTTPException(status_code=400, detail="Query sequence cannot be empty")
 
-    top_matches = kmer.find_top_n_matches(query_sequence, fasta_sequences, k, top_n)
-    return KmerSearchResponse(results=top_matches)
+    top_matches, exec_time = kmer.find_top_n_matches(query_sequence, fasta_sequences, k, top_n)
+    return KmerSearchResponse(results=top_matches, execution_time=exec_time)
 
 if __name__ == "__main__":
     print("Starting bioinformatics API server at http://127.0.0.1:8080")

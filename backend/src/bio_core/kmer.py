@@ -1,3 +1,4 @@
+import time
 from typing import List, Dict, Set
 from models.bio_data import FastaSequence, SimilarityResult
 
@@ -29,6 +30,7 @@ def calculate_jaccard_similarity(counts1: Dict[str, int], counts2: Dict[str, int
     return intersection_size / union_size if union_size != 0 else 0.0
 
 def find_top_n_matches(query_sequence: str, dataset: List[FastaSequence], k: int, n: int) -> List[SimilarityResult]:
+    start_time = time.time()
     query_kmer_counts = calculate_kmer_counts(query_sequence, k)
 
     if not query_kmer_counts:
@@ -46,4 +48,5 @@ def find_top_n_matches(query_sequence: str, dataset: List[FastaSequence], k: int
         ))
 
     similarity_results.sort(key=lambda x: x.similarity_score, reverse=True)
-    return similarity_results[:n]
+    exec_time = round(time.time() - start_time, 1)
+    return similarity_results[:n] ,exec_time

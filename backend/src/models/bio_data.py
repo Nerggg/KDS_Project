@@ -32,3 +32,4 @@ class SimilarityResult(BaseModel):
 
 class KmerSearchResponse(BaseModel):
     results: List[SimilarityResult]
+    execution_time: float

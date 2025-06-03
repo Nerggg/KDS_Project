@@ -24,12 +24,22 @@ interface AnimalResult {
 
 export default function DNAMatcher() {
   const [dnaSequence, setDnaSequence] = useState("")
+  const [kValue, setKValue] = useState<string>("10")
   const [results, setResults] = useState<AnimalResult[] | null>(null)
+  const [executionTime, setExecutionTime] = useState<number | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleSearch = async () => {
-    if (!dnaSequence.trim()) return
+    if (!dnaSequence.trim()) {
+      setError("DNA sequence cannot be empty")
+      return
+    }
+    const k = Number(kValue)
+    if (isNaN(k) || k <= 0) {
+      setError("K value must be a positive integer")
+      return
+    }
 
     setIsSearching(true)
     setError(null)
@@ -42,7 +52,7 @@ export default function DNAMatcher() {
         },
         body: JSON.stringify({
           query_sequence: dnaSequence,
-          k: 10,
+          k: k,
         }),
       })
 
@@ -52,15 +62,22 @@ export default function DNAMatcher() {
 
       const data = await response.json()
       setResults(data.results)
+      setExecutionTime(data.execution_time)
     } catch (err) {
-      console.error('Error fetching results:', err);
+      console.error('Error fetching results:', err)
       if (err instanceof Error) {
-        setError(`Error fetching results: ${err.message}`);
+        setError(`Error fetching results: ${err.message}`)
       } else {
-        setError("Error fetching results. Please try again.");
+        setError("Error fetching results. Please try again.")
       }
     } finally {
       setIsSearching(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === '-' || e.key === 'e') {
+      e.preventDefault()
     }
   }
 
@@ -90,10 +107,27 @@ export default function DNAMatcher() {
                 value={dnaSequence}
                 onChange={(e) => setDnaSequence(e.target.value)}
               />
+              <label htmlFor="k-input" className="block text-lg font-medium text-slate-700">
+                K-mer Size:
+              </label>
+              <input
+                id="k-input"
+                type="number"
+                min="1"
+                step="1"
+                className="w-full p-2 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-400"
+                placeholder="Enter K value"
+                value={kValue}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/^0+/, "")
+                  setKValue(value)
+                }}
+                onKeyDown={handleKeyDown}
+              />
               <div className="flex justify-end">
                 <Button
                   onClick={handleSearch}
-                  disabled={isSearching || !dnaSequence.trim()}
+                  disabled={isSearching || !dnaSequence.trim() || !kValue || Number(kValue) <= 0}
                   className="bg-emerald-600 hover:bg-emerald-700"
                 >
                   {isSearching ? "Searching..." : "Search Animal"}
@@ -118,7 +152,7 @@ export default function DNAMatcher() {
               <div className="flex justify-center mb-4">
                 <Dna className="h-12 w-12 text-slate-400" />
               </div>
-              <p className="text-slate-500">Enter the DNA sequence and click the "Search Animal" button to see the results.</p>
+              <p className="text-slate-500">Enter the DNA sequence and K value, then click the "Search Animal" button to see the results.</p>
             </div>
           )}
 
@@ -133,6 +167,11 @@ export default function DNAMatcher() {
 
           {results && !isSearching && !error && (
             <div className="space-y-4">
+              {executionTime !== null && (
+                <div className="text-center text-slate-600">
+                  <p>Execution time: {executionTime.toFixed(1)} seconds</p>
+                </div>
+              )}
               {results.map((animal, index) => (
                 <AnimalResultCard
                   key={index}
