@@ -1,2 +1,5 @@
 target/
+__pycache__/
+kds_env/
 .env
+*.fasta
